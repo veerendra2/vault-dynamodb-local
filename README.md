@@ -1,8 +1,4 @@
-# Vault Migration Test
-
-```
-vault operator migrate -config migrate.hcl -log-level=debug
-```
+# Vault DynamoDB Local Setup
 
 ## Vault Init
 ```
@@ -28,16 +24,12 @@ reconstruct the root key, Vault will remain permanently sealed!
 It is possible to generate new unseal keys, provided you have a quorum of
 existing unseal keys shares. See "vault operator rekey" for more information.
 
-# unseal 
+# unseal
 $ vault operator unseal
 
 ```
 
-## Prepare ubunut container
+## Vault Backend Migration
 ```
-apt-get update && apt-get install -y postgresql-client lsb-release sudo gpg wget curl
-
-wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-sudo apt update && sudo apt install vault
+$ vault operator migrate -config migrate.hcl -log-level=debug
 ```
