@@ -1,0 +1,53 @@
+version: "3.8"
+
+networks:
+  vault:
+
+services:
+  dynamodb-local:
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    image: "amazon/dynamodb-local:latest"
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./dynamodb:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
+    networks:
+      - vault
+
+  vault:
+    command: server
+    image: hashicorp/vault:1.14.1
+    container_name: vault
+    ports:
+      - 8200:8200
+    volumes:
+      - ./config:/vault/config
+    environment:
+      VAULT_ADDR: "http://127.0.0.1:8200"
+      VAULT_API_ADDR: "http://127.0.0.1:8200"
+      AWS_ACCESS_KEY_ID: "DUMMYIDEXAMPLE"
+      AWS_SECRET_ACCESS_KEY: "DUMMYEXAMPLEKEY"
+      REGION: "eu-central-1"
+      AWS_DYNAMODB_ENDPOINT: "http://dynamodb-local:8000"
+    cap_add:
+      - IPC_LOCK
+    depends_on:
+      - dynamodb-local
+    networks:
+      - vault
+
+  ubuntu:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    command: ["sleep","infinity"]
+    container_name: ubunut
+    depends_on:
+      - dynamodb-local
+      - vault
+    networks:
+      - vault
+    volumes:
+      - "./config:/config"
