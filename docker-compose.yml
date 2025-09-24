@@ -17,7 +17,7 @@ services:
       - vault
 
   vault:
-    command: server
+    command: server # -config=/etc/vault/config.hcl
     image: hashicorp/vault:1.14.1
     container_name: vault
     ports:
